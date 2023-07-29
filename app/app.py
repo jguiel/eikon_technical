@@ -9,7 +9,7 @@ from contextlib import contextmanager
 
 # Creds
 # Obviously, these normally would be in a .env file or AWS secrets manager for security
-DB_HOST = 'localhost'
+DB_HOST = 'pgdb'
 DB_NAME = 'eikondb'
 DB_USER = 'justin_eikonemployee'
 DB_PASSWORD = 'supersecurepass123'
@@ -19,6 +19,8 @@ app = Flask(__name__)
 # PostgreSQL Connection, yield as context manager
 @contextmanager
 def pg_conn(host, database, user, password):
+    conn = None
+    cursor = None
     try:
         conn = psycopg2.connect(
             host=host, 
@@ -29,9 +31,12 @@ def pg_conn(host, database, user, password):
         cursor = conn.cursor()
         yield cursor
     finally:
-        conn.commit()
-        cursor.close()
-        conn.close()
+        if cursor:
+            conn.commit()
+            cursor.close()
+            conn.close()
+        else:
+            return jsonify({'Bad connection': f"User {user} on db {database}"}), 401
 
 
 @app.route('/experiments', methods=['POST'])
@@ -131,4 +136,4 @@ def load_data_pg(derived_results: pd.DataFrame) -> None:
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

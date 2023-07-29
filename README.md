@@ -4,9 +4,9 @@
 This repo contains a Flask app that is built solely to derive certain features from three CSV files contained withing `data/` directory and upload it to a PostgreSQL database. It is deployed via Docker, including handling the install of all required packages. The data output by the ETL/API are queried via a separate Python script to verify these data are correctly extracted, transformed, and loaded.
 
 ## Step-by-step instantiation w/Docker
-1. Clone this repo locally with `git clone <url>`
+1. Clone this repo locally with `git clone https://github.com/jguiel/eikon_technical.git`
 2. Enter the repo with `cd eikon_takehome`
-3. Run using `docker run`
+3. Run using `docker-compose up`
 
 ### Output
 This script will output a table to your command line, showing the derived data
