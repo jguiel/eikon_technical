@@ -5,15 +5,20 @@ This repo contains a Flask app that is built solely to derive certain features f
 
 ## Step-by-step guide
 
+### Prerequisites
+1. Docker desktop app/daemon downloaded and running
+2. Port 5001 available (use of 5000 deprecated due to AirPlay on MacOS)
+3. Git command line
+
 ### Instantiation w/Docker
 1. Clone this repo locally with `git clone https://github.com/jguiel/eikon_technical.git`
-2. Enter the repo with `cd eikon_takehome`
-3. Ensure Docker daemon is running (download Docker desktop and open app)
+2. Enter the repo with `cd eikon_technical`
+3. Ensure Docker daemon is running (open Docker app)
 4. Run using `docker-compose up`
 
 ### Run and validate with Click app
 
-Click commands can be used to trigger ETL API or validate these data have been loaded correctly with `docker exec -it eikon_takehome-api_cli-1 python api_cli.py --<arg>` or in the Docker container interactive terminal directly with `python api_cli.py --<arg>`
+Click commands can be used to trigger ETL API or validate these data have been loaded correctly with `docker exec -it eikon_technical-master-api_cli-1 python api_cli.py --<arg>` or in the Docker container interactive terminal directly with `python api_cli.py --<arg>`
 ```
 # api_cli Click app's help section
 root@1d2a3b37035c:/api_cli# python api_cli.py --help
@@ -31,50 +36,44 @@ Options:
 
 **A successful api call would look like**
 ```
-➜  eikon_takehome git:(master) ✗ docker-compose run api_cli python api_cli.py --api
+➜  eikon_technical git:(master) ✗ docker-compose run api_cli python api_cli.py --api
 [+] Running 2/0
- ✔ Container eikon_takehome-pgdb-1  Running                                                                                                                                                                 0.0s
- ✔ Container eikon_takehome-web-1   Running                                                                                                                                                                 0.0s
+ ✔ Container eikon_technical-pgdb-1  Running                                                                                                                                                                 0.0s
+ ✔ Container eikon_technical-web-1   Running                                                                                                                                                                 0.0s
 {
   "Success": true
 }
-➜  eikon_takehome git:(master) ✗ docker-compose run api_cli python api_cli.py --validate
+➜  eikon_technical git:(master) ✗ docker-compose run api_cli python api_cli.py --validate
 [+] Running 2/0
- ✔ Container eikon_takehome-pgdb-1  Running                                                                                                                                                                 0.0s
- ✔ Container eikon_takehome-web-1   Running                                                                                                                                                                 0.0s
-+---------+--------------------+-----------------------+------------------------+-----------------------------+
-| user_id | total_exp_per_user | avg_exp_time_per_user | most_consumed_compound | most_consumed_compound_name |
-+---------+--------------------+-----------------------+------------------------+-----------------------------+
-|    1    |         2          |          12.5         |           2            |          Compound B         |
-|    2    |         0          |          0.0          |          None          |             None            |
-|    3    |         1          |          25.0         |           2            |          Compound B         |
-|    4    |         1          |          30.0         |           1            |          Compound A         |
-|    5    |         1          |          35.0         |           2            |          Compound B         |
-|    6    |         1          |          40.0         |           1            |          Compound A         |
-|    7    |         1          |          45.0         |           2            |          Compound B         |
-|    8    |         1          |          50.0         |           1            |          Compound A         |
-|    9    |         2          |          37.5         |           1            |          Compound A         |
-|    10   |         2          |          35.0         |           3            |          Compound C         |
-+---------+--------------------+-----------------------+------------------------+-----------------------------+
+ ✔ Container eikon_technical-pgdb-1  Running                                                                                                                                                                 0.0s
+ ✔ Container eikon_technical-web-1   Running                                                                                                                                                                 0.0s
++---------+--------------------+----------------------+-----------------------+------------------------+-----------------------------+
+| user_id | total_exp_per_user | avg_experiment_count | avg_exp_time_per_user | most_consumed_compound | most_consumed_compound_name |
++---------+--------------------+----------------------+-----------------------+------------------------+-----------------------------+
+|    1    |         2          |         2.05         |          12.5         |           2            |          Compound B         |
+|    2    |         2          |         2.05         |          25.0         |           3            |          Compound C         |
+    ...
++---------+--------------------+----------------------+-----------------------+------------------------+-----------------------------+
 ```
 
 ### Closing and/or restarting app
 1. Spin down containers by running `docker-compose down` or deleting containers in Docker desktop
-2. Delete docker volume with `docker volume rm eikon_takehome_postgres_data`
+2. Delete docker volume with `docker volume rm eikon_technical_postgres_data`
     - Failure to do so will lead to redundant data in database on subsequent API calls with the same csv input
 
 ### Derived data
 From these CSVs, the app derives a new table. For each `user_id`:
 1. `user_id`: Scientist's ID
 2. `total_exp_per_user`: Total experiments ran per user
-3. `avg_exp_time_per_user`: The average experiment runtime for each user
-4. `most_consumed_compound`: ID for most used compound across all experiments for each user. See *Out of Scope* section for detail on future feature implementation
-5. `most_consumed_compound_name`: Human readable compound name
+3. `avg_experiment_count`: Average experiment count across *all* users, will be the same for ever record in table (per API call)
+4. `avg_exp_time_per_user`: The average experiment runtime for each user
+5. `most_consumed_compound`: ID for most used compound across all experiments for each user. See *Out of Scope* section for detail on future feature implementation
+6. `most_consumed_compound_name`: Human readable compound name
 
 ### Data origin
 This app works explicitly with the three files below.
 ```
-eikon_takehome/data/* 
+eikon_technical/data/* 
 # This subdirectory contains only the three files below
 users.csv
 user_experiments.csv
