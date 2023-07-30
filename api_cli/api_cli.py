@@ -1,3 +1,5 @@
+""" Click CLI app to trigger ETL API and validate subsequent ETL data """
+
 import click
 import subprocess
 import psycopg2

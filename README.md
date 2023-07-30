@@ -14,11 +14,12 @@ This repo contains a Flask app that is built solely to derive certain features f
 1. Clone this repo locally with `git clone https://github.com/jguiel/eikon_technical.git`
 2. Enter the repo with `cd eikon_technical`
 3. Ensure Docker daemon is running (open Docker app)
-4. Run using `docker-compose up`
+4. Run using `docker-compose up -d`
 
 ### Run and validate with Click app
 
-Click commands can be used to trigger ETL API or validate these data have been loaded correctly with `docker exec -it eikon_technical-master-api_cli-1 python api_cli.py --<arg>` or in the Docker container interactive terminal directly with `python api_cli.py --<arg>`
+Click commands can be used to trigger ETL API or validate these data have been loaded correctly with `docker exec -it eikon_technical-api_cli-1 python api_cli.py --<arg>` or in the Docker container interactive terminal directly with `python api_cli.py --<arg>`
+* Note that the name of the docker container in the command above may differ machine-to-machine. use `docker ps` or check the Docker desktop app.
 ```
 # api_cli Click app's help section
 root@1d2a3b37035c:/api_cli# python api_cli.py --help
