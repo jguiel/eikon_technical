@@ -14,5 +14,12 @@ services:
       - "5000:5000"
     depends_on:
       - pgdb
+  api_cli:
+    build: ./api_cli
+    volumes:
+      - ./api_cli:/api_cli
+    depends_on:
+      - web
+      - pgdb
 volumes:
   postgres_data:

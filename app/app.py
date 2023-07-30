@@ -78,6 +78,14 @@ def experiment_etl(path_to_data: str) -> pd.DataFrame:
     # Add to dict, defaulting to 0 if no experiments found
     derived_results_py['total_exp_per_user'] = [total_exp_per_users[x] if x in total_exp_per_users.keys() else 0 for x in user_ids]
 
+    # Average experiment count for all users
+    avg_experiment_count = round(experiments_df.shape[0]/users_df.shape[0], 2)
+    derived_results_py['avg_experiment_count'] = [avg_experiment_count for _ in user_ids]
+
+    # Mean experiment run time
+    total_exp_time_per_user = experiments_df.groupby('user_id')['experiment_run_time'].sum()
+    derived_results_py['avg_exp_time_per_user'] = [round(total_exp_time_per_user[x]/total_exp_per_users[x], 2) if x in total_exp_per_users.keys() else 0 for x in user_ids]
+
     # Change experiment_compound_ids in-place to list of ints instead of semicolon-delimited str
     experiments_df['experiment_compound_ids'] = experiments_df['experiment_compound_ids'].str.split(';').apply(
         lambda x: list(map(int, x))
@@ -101,12 +109,10 @@ def experiment_etl(path_to_data: str) -> pd.DataFrame:
     
     # DataFramed for ease of ingestion to pgsql
     derived_results = pd.DataFrame(derived_results_py)
-    print(derived_results)
     return derived_results
 
 
 def load_data_pg(derived_results: pd.DataFrame) -> None:
-
     
     # Connection as context mgr
     with pg_conn(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) as cursor:
@@ -115,6 +121,8 @@ def load_data_pg(derived_results: pd.DataFrame) -> None:
         CREATE TABLE IF NOT EXISTS derived_exp_data (
             user_id INT,
             total_exp_per_user INT,
+            avg_experiment_count FLOAT8,
+            avg_exp_time_per_user FLOAT8,
             most_consumed_compound INT,
             most_consumed_compound_name TEXT
         )
@@ -127,9 +135,11 @@ def load_data_pg(derived_results: pd.DataFrame) -> None:
             INSERT INTO derived_exp_data (
                 user_id,
                 total_exp_per_user,
+                avg_experiment_count,
+                avg_exp_time_per_user,
                 most_consumed_compound,
                 most_consumed_compound_name
-            ) VALUES (%s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s)
             """
             values = tuple(user_data)
             cursor.execute(insert_query, values)
