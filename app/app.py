@@ -10,13 +10,11 @@ from app_helpers import (
     transform_data,
 )
 
-
 # Creds
-# Obviously, these normally would be in a .env file or AWS secrets manager for security
-DB_HOST = 'pgdb'
-DB_NAME = 'eikondb'
-DB_USER = 'justin_eikonemployee'
-DB_PASSWORD = 'supersecurepass123'
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 app = Flask(__name__)
 
 

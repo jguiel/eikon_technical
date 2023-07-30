@@ -1,15 +1,16 @@
 """ Click CLI app to trigger ETL API and validate subsequent ETL data """
 
+import os
 import click
 import subprocess
 import psycopg2
 from prettytable import from_db_cursor
 
-# PostgreSQL Connection details
-DB_HOST = 'pgdb'
-DB_NAME = 'eikondb'
-DB_USER = 'justin_eikonemployee'
-DB_PASSWORD = 'supersecurepass123'
+# PostgreSQL Connection creds
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 @click.command()
 @click.option('--api', is_flag=True, help="Run API call with data in data/ directory")

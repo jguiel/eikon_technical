@@ -1,12 +1,16 @@
 version: '3.8'
 services:
   pgdb:
-    build: pgdb
+    env_file:
+      - .env
+    build: 
+      context: ./pgdb
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     restart: always
   web:
-    build: app
+    build: 
+      context: ./app
     command: python app.py
     volumes:
       - ./app:/app
@@ -14,12 +18,17 @@ services:
       - "5001:5000"
     depends_on:
       - pgdb
+    env_file:
+      - .env
   api_cli:
-    build: ./api_cli
+    build: 
+      context: ./api_cli
     volumes:
       - ./api_cli:/api_cli
     depends_on:
       - web
       - pgdb
+    env_file:
+      - .env
 volumes:
   postgres_data:
