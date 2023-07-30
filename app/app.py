@@ -25,9 +25,9 @@ def pg_conn(host, database, user, password):
     cursor = None
     try:
         conn = psycopg2.connect(
-            host=host, 
-            database=database, 
-            user=user, 
+            host=host,
+            database=database,
+            user=user,
             password=password
         )
         cursor = conn.cursor()
@@ -51,18 +51,18 @@ def run_experiment_etl():
         # Load data to postgres
         load_data_pg(transformed_data)
         # Return 200
-        return jsonify({'Success': True,}), 200
-    
+        return jsonify({'Success': True}), 200
+
     # Error handling
     except FileNotFoundError as err:
         return jsonify({'Bad path to data': str(err)}), 404
     except Exception as err:
         print(err)
         return jsonify({'uh-oh': str(err)}), 500
-    
+
 
 def experiment_etl(path_to_data: str) -> pd.DataFrame:
-    
+
     # Load CSVs to dataframe
     users_df, experiments_df, compounds_df = load_dataframes(path_to_data)
     # Extract derived data
@@ -70,7 +70,7 @@ def experiment_etl(path_to_data: str) -> pd.DataFrame:
 
 
 def load_data_pg(derived_results: pd.DataFrame) -> None:
-    
+
     # Connection as context mgr
     with pg_conn(DB_HOST, DB_NAME, DB_USER, DB_PASSWORD) as cursor:
         # Create table

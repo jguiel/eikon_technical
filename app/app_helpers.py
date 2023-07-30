@@ -10,13 +10,13 @@ def load_dataframes(path_to_data: str) -> Tuple[pd.DataFrame, pd.DataFrame, pd.D
     users_df = pd.read_csv(os.path.join(path_to_data, "users.csv"))
     experiments_df = pd.read_csv(os.path.join(path_to_data, "user_experiments.csv"))
     compounds_df = pd.read_csv(os.path.join(path_to_data, "compounds.csv"))
-    
+
     return users_df, experiments_df, compounds_df
 
 
 def transform_data(
-    users_df: pd.DataFrame, 
-    experiments_df: pd.DataFrame, 
+    users_df: pd.DataFrame,
+    experiments_df: pd.DataFrame,
     compounds_df: pd.DataFrame
 ) -> pd.DataFrame:
     # Instantiate new dict object for derived results
@@ -39,7 +39,7 @@ def transform_data(
     total_exp_time_per_user = experiments_df.groupby('user_id')['experiment_run_time'].sum()
     # Add mean experiment time, defaulting to 0 for users with no experiments
     derived_results_py['avg_exp_time_per_user'] = round(
-        total_exp_time_per_user.get(user_ids, 0)/derived_results_py['total_exp_per_user'], 
+        total_exp_time_per_user.get(user_ids, 0)/derived_results_py['total_exp_per_user'],
         2,
     )
 
@@ -52,9 +52,9 @@ def transform_data(
 
 
 def prepare_compound_data(
-    experiments_df: pd.DataFrame, 
-    compounds_df: pd.DataFrame, 
-    user_ids: List[str], 
+    experiments_df: pd.DataFrame,
+    compounds_df: pd.DataFrame,
+    user_ids: List[str],
     derived_results_py: dict
 ) -> dict:
     # Change experiment_compound_ids in-place to list of ints instead of semicolon-delimited str
@@ -83,6 +83,7 @@ def prepare_compound_data(
     derived_results_py["most_consumed_compound_name"] = most_consumed_compound.get(user_ids, None)
 
     return derived_results_py
+
 
 if __name__ == '__main__':
 
