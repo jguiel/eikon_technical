@@ -41,17 +41,11 @@ Options:
 
 **A successful api call would look like**
 ```
-➜  eikon_technical git:(master) ✗ docker-compose run api_cli python api_cli.py --api
-[+] Running 2/0
- ✔ Container eikon_technical-pgdb-1  Running                                                                                                                                                                 0.0s
- ✔ Container eikon_technical-web-1   Running                                                                                                                                                                 0.0s
+➜  eikon_technical git:(master) ✗ docker exec -it eikon_technical-api_cli-1 python api_cli.py --api
 {
   "Success": true
 }
-➜  eikon_technical git:(master) ✗ docker-compose run api_cli python api_cli.py --validate
-[+] Running 2/0
- ✔ Container eikon_technical-pgdb-1  Running                                                                                                                                                                 0.0s
- ✔ Container eikon_technical-web-1   Running                                                                                                                                                                 0.0s
+➜  eikon_technical git:(master) ✗ docker exec -it eikon_technical-api_cli-1 python api_cli.py --validate
 +---------+--------------------+----------------------+-----------------------+------------------------+-----------------------------+
 | user_id | total_exp_per_user | avg_experiment_count | avg_exp_time_per_user | most_consumed_compound | most_consumed_compound_name |
 +---------+--------------------+----------------------+-----------------------+------------------------+-----------------------------+
