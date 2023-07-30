@@ -1,7 +1,9 @@
 # Eikon Therapeutics Technical Assessment
 *Justin Guiel, 2023*
 
-This repo contains a Flask app that is built solely to derive certain features from three CSV files contained within `data/` directory and upload it to a PostgreSQL database. It is deployed via Docker, including handling the install of all required packages. The data output by the ETL/API are queried via a separate Python script to verify these data are correctly extracted, transformed, and loaded.
+This repo contains a Flask app that is built solely to derive certain features from three CSV files contained within `app/data/` directory and upload it to a PostgreSQL database. It is deployed via Docker, including handling the install of all required packages. The data output by the ETL/API are queried via a separate Python script to verify these data are correctly extracted, transformed, and loaded.
+
+**Try uploading your own users.csv and user_experiments.csv to `app/data/`!**
 
 ## Step-by-step guide
 
@@ -26,7 +28,7 @@ root@1d2a3b37035c:/api_cli# python api_cli.py --help
 Usage: api_cli.py [OPTIONS]
 
 Options:
-  --api       Run API call with data in `data/` directory
+  --api       Run API call with data in `app/data/` directory
   --validate  Query the database to validate results
   --help      Show this message and exit.
 ```
@@ -74,7 +76,7 @@ From these CSVs, the app derives a new table. For each `user_id`:
 ### Data origin
 This app works explicitly with the three files below.
 ```
-eikon_technical/data/* 
+eikon_technical/app/data/* 
 # This subdirectory contains only the three files below
 users.csv
 user_experiments.csv
@@ -106,7 +108,7 @@ Fixes and features that I would implement in later refined epics
     - Currently, most used compound by each scientist is earliest indexed compound. Multimodal compounds are disregarded.
     - Future feature would have a list of all compounds most used ie. bimodal, trimodal, multimodal most-used compounds
 - Upload data files
-    - Currently, this app ingests whatever files are found in the `data/` directory and assumes they are named `users.csv`, `user_experiments.csv`, and `compounds.csv`
+    - Currently, this app ingests whatever files are found in the `app/data/` directory and assumes they are named `users.csv`, `user_experiments.csv`, and `compounds.csv`
     - Future feature would:
         - Accept POST requests of entire csv files
         - AWS Lambda listener for files uploaded to specified AWS S3 bucket; ingest these
