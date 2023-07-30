@@ -1,6 +1,7 @@
 """ Small ETL flask app to derive data from user experiments. Justin Guiel 2023 """
 
 import os
+import logging
 from flask import Flask, request, jsonify
 import pandas as pd
 import psycopg2
@@ -17,6 +18,16 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 app = Flask(__name__)
 
+# Logger
+eikon_api_logger = logging.getLogger(__name__)
+eikon_api_logger.setLevel(logging.DEBUG)
+stdout_logs = logging.StreamHandler()
+stdout_logs_fmt = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+stdout_logs.setFormatter(stdout_logs_fmt)
+eikon_api_logger.addHandler(stdout_logs)
+
 
 # PostgreSQL Connection, yield as context manager
 @contextmanager
@@ -29,13 +40,13 @@ def pg_conn(host, database, user, password):
         )
         cursor = conn.cursor()
         yield cursor
+    except psycopg2.OperationalError as err:
+        eikon_api_logger.error(f"Bad connection to pg database: {err}", exc_info=True)
+        return jsonify({"Bad connection": f"User {user} on db {database}"}), 401
     finally:
-        if cursor:
-            conn.commit()
-            cursor.close()
-            conn.close()
-        else:
-            return jsonify({"Bad connection": f"User {user} on db {database}"}), 401
+        conn.commit()
+        cursor.close()
+        conn.close()
 
 
 @app.route("/experiments", methods=["POST"])
@@ -51,9 +62,10 @@ def run_experiment_etl():
 
     # Error handling
     except FileNotFoundError as err:
+        eikon_api_logger.error(f"Bad path: {err}", exc_info=True)
         return jsonify({"Bad path to data": str(err)}), 404
     except Exception as err:
-        print(err)
+        eikon_api_logger.error(f"Exception: {err}")
         return jsonify({"uh-oh": str(err)}), 500
 
 
